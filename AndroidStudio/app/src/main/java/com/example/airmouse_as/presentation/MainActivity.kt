@@ -25,7 +25,7 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import com.example.airmouse_as.presentation.theme.AirMouseASTheme
 
-// >>> CAMBIA CON L'IP DEL TUO PC <<<
+// Computer Ip (use "ip a" to show)
 private const val PC_IP = "10.45.165.88"
 private const val PC_PORT = 5005
 

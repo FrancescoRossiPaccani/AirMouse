@@ -2,27 +2,47 @@ import json
 import socket
 import time
 
-HOST = "0.0.0.0"   # ascolta su tutte le interfacce
+HOST = "0.0.0.0"
 PORT = 5005
+
+SHOW_RAW = True  # metti False per stampare solo i dati puliti
+
+
+def get_local_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        s.connect(("10.255.255.255", 1))  # non invia nulla, serve solo a scegliere l'interfaccia
+        return s.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+    finally:
+        s.close()
+
+
+def fmt(v, w=8, d=3):
+    return " ".join(f"{x:{w}.{d}f}" for x in v)
+
 
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.bind((HOST, PORT))
-print(f"In ascolto su UDP {HOST}:{PORT} ...")
 
-count = 0
+ip = get_local_ip()
+print("=" * 50)
+print(f"  IP del PC:  {ip}")
+print(f"  Porta UDP:  {PORT}")
+print(f'  Nell\'app Android imposta: PC_IP = "{ip}"')
+print("=" * 50)
+
+count, lost, last_seq = 0, 0, None
 last_report = time.time()
-last_seq = None
-lost = 0
 
 while True:
     data, addr = sock.recvfrom(2048)
     try:
         p = json.loads(data.decode("utf-8"))
     except json.JSONDecodeError:
-        print("Pacchetto non valido:", data)
         continue
 
-    # conteggio pacchetti persi
     if last_seq is not None and p["seq"] > last_seq + 1:
         lost += p["seq"] - last_seq - 1
     last_seq = p["seq"]
@@ -30,14 +50,18 @@ while True:
     a, g, m = p["acc"], p["gyro"], p["mag"]
     print(
         f"#{p['seq']:6d} t={p['t']:10d}ms | "
-        f"ACC [{a[0]:7.3f} {a[1]:7.3f} {a[2]:7.3f}] m/s² | "
-        f"GYR [{g[0]:7.3f} {g[1]:7.3f} {g[2]:7.3f}] rad/s | "
-        f"MAG [{m[0]:7.2f} {m[1]:7.2f} {m[2]:7.2f}] µT"
+        f"ACC [{fmt(a)}] | GYR [{fmt(g)}] | MAG [{fmt(m, 8, 2)}]"
     )
+
+    if SHOW_RAW and "raw" in p:
+        r = p["raw"]
+        print(
+            f"{'raw':>7s} {'':14s} | "
+            f"ACC [{fmt(r[0:3])}] | GYR [{fmt(r[3:6])}] | MAG [{fmt(r[6:9], 8, 2)}]"
+        )
 
     count += 1
     now = time.time()
     if now - last_report >= 1.0:
         print(f"--- {count / (now - last_report):.1f} Hz da {addr[0]} | persi: {lost} ---")
-        count = 0
-        last_report = now
+        count, last_report = 0, now
