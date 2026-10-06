@@ -1,0 +1,2 @@
+6/10/2026
+(group work) We have a brainstorming session to decide the implementation. We also create the repo and test the connectivity between the smartwach (as a mouse) and the pc (via python script) | +1 commit | + 4120 lines of code
