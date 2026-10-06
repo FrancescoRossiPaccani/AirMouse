@@ -1,2 +1,3 @@
-6/10/2026
-(group work) We have a brainstorming session to decide the implementation. We also create the repo and test the connectivity between the smartwach (as a mouse) and the pc (via python script) | +1 commit | + 4120 lines of code
+(group work) We have a brainstorming session to decide the implementation. We also create the repo and test the connectivity between the smartwach (as a mouse) and the pc (via python script) 
+In the afternoon we implemented the denoiser
+| +8 commit | + 4294 lines of code
