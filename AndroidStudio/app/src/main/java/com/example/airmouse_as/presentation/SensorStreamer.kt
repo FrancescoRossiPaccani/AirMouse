@@ -38,6 +38,8 @@ class SensorStreamer(
     private var sendJob: Job? = null
     private var networkCallback: ConnectivityManager.NetworkCallback? = null
 
+    private val denoiser = WaveletDenoiser(nChannels = 9, window = 64, delay = 4)
+
     // ultimi valori letti (sostituiti per intero ad ogni evento)
     @Volatile private var acc = FloatArray(3)
     @Volatile private var gyro = FloatArray(3)
@@ -45,6 +47,7 @@ class SensorStreamer(
 
     companion object {
         const val RATE_HZ = 20
+        const val SEND_RAW = true // metti false quando non ti serve più il confronto
         private const val SENSOR_DELAY_US = 1_000_000 / RATE_HZ // 50 ms
     }
 
@@ -106,6 +109,9 @@ class SensorStreamer(
         sendJob = scope.launch {
             var socket: DatagramSocket? = null
             try {
+                // riparte con la finestra del filtro vuota
+                denoiser.reset()
+
                 socket = DatagramSocket()
                 network.bindSocket(socket) // forza il traffico sul Wi-Fi
                 val address = InetAddress.getByName(host)
@@ -113,18 +119,29 @@ class SensorStreamer(
                 var seq = 0L
                 var next = SystemClock.elapsedRealtime()
 
-                onStatus("Invio a $host:$port")
-
                 while (isActive) {
-                    val json = JSONObject().apply {
-                        put("seq", seq++)
-                        put("t", SystemClock.elapsedRealtime())
-                        put("acc", JSONArray(acc.map { it.toDouble() }))
-                        put("gyro", JSONArray(gyro.map { it.toDouble() }))
-                        put("mag", JSONArray(mag.map { it.toDouble() }))
+                    val raw = floatArrayOf(
+                        acc[0], acc[1], acc[2],
+                        gyro[0], gyro[1], gyro[2],
+                        mag[0], mag[1], mag[2],
+                    )
+                    val clean = denoiser.update(raw)
+
+                    if (clean == null) {
+                        onStatus("Riempimento filtro...")
+                    } else {
+                        val json = JSONObject().apply {
+                            put("seq", seq++)
+                            put("t", SystemClock.elapsedRealtime())
+                            put("acc", JSONArray(clean.copyOfRange(0, 3).map { it.toDouble() }))
+                            put("gyro", JSONArray(clean.copyOfRange(3, 6).map { it.toDouble() }))
+                            put("mag", JSONArray(clean.copyOfRange(6, 9).map { it.toDouble() }))
+                            if (SEND_RAW) put("raw", JSONArray(raw.map { it.toDouble() }))
+                        }
+                        val bytes = json.toString().toByteArray(Charsets.UTF_8)
+                        socket.send(DatagramPacket(bytes, bytes.size, address, port))
+                        onStatus("Invio a $host:$port")
                     }
-                    val bytes = json.toString().toByteArray(Charsets.UTF_8)
-                    socket.send(DatagramPacket(bytes, bytes.size, address, port))
 
                     next += periodMs
                     val wait = next - SystemClock.elapsedRealtime()
