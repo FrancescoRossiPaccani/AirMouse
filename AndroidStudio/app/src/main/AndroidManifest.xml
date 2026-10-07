@@ -1,38 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Inizio aggiunti -->
+    <!-- INIZIO PERMESSI DI RETE AGGIUNTI -->
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />                  <!-- .INTERNET Consente all'applicazione di aprire socket di rete ed effettuare richieste HTTP/HTTPS verso server esterni. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />      <!-- .ACCESS_NETWORK_STATE Permette di verificare lo stato della connessione (se sei online, offline, sotto Wi-Fi, Bluetooth tethering o rete cellulare). -->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />      <!-- .CHANGE_NETWORK_STATE Permette all'applicazione di richiedere modifiche allo stato della rete (ad esempio forzare la connessione a una specifica rete Wi-Fi o richiedere l'attivazione della rete mobile ad alta priorità tramite NetworkRequest). -->
 
-    <!-- Fine aggiunti -->
+    <!-- FINE PERMESSI DI RETE AGGIUNTI -->
 
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />                 <!-- .WAVE_LOCK Impedisce alla CPU dell'orologio di entrare in modalità di sospensione profonda -->
+    <uses-feature android:name="android.hardware.type.watch" />                     <!-- .TYPE.WATCH Dichiara che l'applicazione è progettata specificamente per l'hardware di tipo orologio. -->
 
-    <uses-feature android:name="android.hardware.type.watch" />
-
+    <!-- Dichiara l'applicazione Android vera e propria e ne definisce il comportamento globale. -->
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@android:style/Theme.DeviceDefault">
+
+        <!-- Collega la libreria di runtime proprietaria di Wear OS -->
         <uses-library
             android:name="com.google.android.wearable"
             android:required="true" />
+
+        <!-- Riferimento alle API di sistema aggiuntive per Wear OS -->
         <uses-library
             android:name="wear-sdk"
             android:required="false" />
 
-        <!--
-               Set to true if your app is Standalone, that is, it does not require the handheld
-               app to run.
-        -->
+        <!-- Indica al Google Play Store che l'app per smartwatch è completamente autonoma -->
         <meta-data
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
+        <!-- Schermata principale -->
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
