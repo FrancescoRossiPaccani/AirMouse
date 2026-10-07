@@ -1,4 +1,16 @@
-6/10/2026
-(group work) We have a brainstorming session to decide the implementation. We also create the repo and test the connectivity between the smartwach (as a mouse) and the pc (via python script) 
-In the afternoon we implemented the denoiser
-| +9 commit | + 4294 lines of code
+STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
+================================================================================
+
+[06/10/2026] (5.0h) - GROUP WORK (with F. Rossi Paccani)
+* Topic: Architecture, Connectivity & IMU Denoiser
+* Details:
+  - Brainstorming session to decide architecture and implementation.
+  - Created repo and validated smartwatch-to-PC connection via Python.
+  - Implemented the denoising filter.
+* Git: +9 commits | +4294 lines of code (reciverV0.py, base setup)
+
+[07/10/2026] (2.0h) - INDIVIDUAL WORK
+* Topic: Motion Tracking & Literature Review
+* Details:
+  - Studied reference research paper.
+  - Prepared Paper presentation.
