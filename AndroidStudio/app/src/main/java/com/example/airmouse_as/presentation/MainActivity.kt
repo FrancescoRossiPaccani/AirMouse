@@ -25,8 +25,11 @@ import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import com.example.airmouse_as.presentation.theme.AirMouseASTheme
 
-private const val PC_IP = "10.45.165.88"    // INSERIRE IP DEL PROPRIO PC
-private const val PC_PORT = 5005            // INSERIRE PORTA DEL PROCESSO CHE LEGGE I DATI DELL'OROLOGIO
+
+// Computer Ip (use "ip a" to show)
+private const val PC_IP = "10.81.154.88"
+private const val PC_PORT = 5005
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
