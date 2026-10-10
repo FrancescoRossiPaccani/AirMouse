@@ -4,4 +4,4 @@ In the afternoon we implemented the denoiser
 | +9 commit | + 4294 lines 
 7/10/2026 -> 9/10/2026 
 (single task) I develop a code to record the gesture's data, test and catch some data from my friends
-| +1 commit | + lines (with csv file included)
+| +1 commit | + lines 204 + csv file 

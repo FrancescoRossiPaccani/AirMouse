@@ -1,94 +1,245 @@
 package com.example.airmouse_as.presentation
 
 import android.os.Bundle
+import android.view.KeyEvent
+import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
 import androidx.wear.compose.material3.Button
 import androidx.wear.compose.material3.ListHeader
+import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
 import androidx.wear.compose.material3.SurfaceTransformation
 import androidx.wear.compose.material3.Text
 import androidx.wear.compose.material3.lazy.rememberTransformationSpec
 import androidx.wear.compose.material3.lazy.transformedHeight
 import com.example.airmouse_as.presentation.theme.AirMouseASTheme
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-
-// Computer Ip (use "ip a" to show)
-private const val PC_IP = "10.81.154.88"
-private const val PC_PORT = 5005
-
+private const val HOLD_SECONDS = 3
 
 class MainActivity : ComponentActivity() {
+
+    private lateinit var session: SessionManager
+    private val uiScope = MainScope()
+    private var holdJob: Job? = null
+    private var closing = false
+    private var holdSeconds by mutableStateOf<Int?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent { WearApp() }
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        session = SessionManager(this)
+        session.start()
+        setContent { WearApp(session, holdSeconds) }
+    }
+
+    // Pressione prolungata (3 s) del pulsante: chiude connessione e app.
+    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
+        if (event.keyCode == KeyEvent.KEYCODE_BACK ||
+            event.keyCode == KeyEvent.KEYCODE_STEM_PRIMARY
+        ) {
+            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) startHold()
+            else if (event.action == KeyEvent.ACTION_UP) cancelHold()
+            return true
+        }
+        return super.dispatchKeyEvent(event)
+    }
+
+    private fun startHold() {
+        if (holdJob != null) return
+        holdJob = uiScope.launch {
+            for (s in HOLD_SECONDS downTo 1) {
+                holdSeconds = s
+                delay(1000)
+            }
+            closing = true            // da qui il rilascio del pulsante non annulla più
+            holdSeconds = 0
+            session.shutdown()        // invia "bye" al server e chiude tutto
+            finishAffinity()
+        }
+    }
+
+    private fun cancelHold() {
+        if (closing) return
+        holdJob?.cancel()
+        holdJob = null
+        holdSeconds = null
+    }
+
+    override fun onDestroy() {
+        uiScope.cancel()
+        session.release()
+        super.onDestroy()
     }
 }
 
 @Composable
-fun WearApp() {
+fun WearApp(session: SessionManager, holdSeconds: Int?) {
     AirMouseASTheme {
         AppScaffold {
+            val wifiReady by session.wifiReady.collectAsState()
+            val notice by session.notice.collectAsState()
+            val devices by session.pairing.devices.collectAsState()
+            val pairState by session.pairing.state.collectAsState()
+            val message by session.pairing.message.collectAsState()
+            val streamStatus by session.streamStatus.collectAsState()
 
-            val context = LocalContext.current                                                      // Recupera il Context della schermata corrente (l'Activity)
-            val view = LocalView.current                                                            // Recupera la View della schermata corrente
-            var status by remember { mutableStateOf("Fermo") }                               // Contiene la stringa informativa da mostrare all'utente.
-            var running by remember { mutableStateOf(false) }                                // Indica se il servizio è attivo.
+            val connected = pairState as? PairState.Connected
+            val connecting = pairState as? PairState.Connecting
 
-            // Oggetto che gestisce la trasmissione dei dati dei sensori verso il PC
-            val streamer = remember {
-                SensorStreamer(context.applicationContext, PC_IP, PC_PORT) { status = it }
+            val hint = when (holdSeconds) {
+                null -> "Hold BACK ${HOLD_SECONDS} s to exit"
+                0 -> "Closing…"
+                else -> "Closing in $holdSeconds…"
             }
-
-            // Si rimane in ascolto della modifica dello stato di running
-            DisposableEffect(running) {
-                view.keepScreenOn = running                                                         // Se running=true si forza il display a rimanere accesso e non andare in standby
-                onDispose { view.keepScreenOn = false }                                             // Se running=false si ripristina lo stato iniziale, quindi l'orologio ora può rispengersi
-            }
-
-            // Serve a spengere lo streaming quando si esce dalla schermata (Unit è un valore singleton costante (è un oggetto unico che non cambia mai valore).
-            DisposableEffect(Unit) { onDispose { streamer.stop() } }
 
             val listState = rememberTransformingLazyColumnState()
             val spec = rememberTransformationSpec()
 
-
             ScreenScaffold(scrollState = listState) { padding ->
                 TransformingLazyColumn(contentPadding = padding, state = listState) {
-                    item {
-                        ListHeader(
-                            modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
-                            transformation = SurfaceTransformation(spec),
-                        ) { Text("Air Mouse") }
-                    }
-                    item {
-                        Text(
-                            text = status,
-                            modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
-                        )
-                    }
-                    item {
-                        Button(
-                            onClick = {
-                                if (running) streamer.stop() else streamer.start()
-                                running = !running
-                            },
-                            modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
-                            transformation = SurfaceTransformation(spec),
-                        ) { Text(if (running) "Stop" else "Start") }
+                    when {
+                        // 1) in attesa del Wi-Fi
+                        !wifiReady -> {
+                            item {
+                                ListHeader(
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    transformation = SurfaceTransformation(spec),
+                                ) { Text("Air Mouse") }
+                            }
+                            item {
+                                Text(
+                                    text = notice ?: "Looking for Wi-Fi…",
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                )
+                            }
+                        }
+
+                        // 2) connesso: streaming attivo
+                        connected != null -> {
+                            item {
+                                ListHeader(
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    transformation = SurfaceTransformation(spec),
+                                ) { Text("Connected") }
+                            }
+                            item {
+                                Text(
+                                    text = connected.device.name,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                )
+                            }
+                            item {
+                                Text(
+                                    text = connected.device.ip,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                )
+                            }
+                            item {
+                                Text(
+                                    text = streamStatus,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                )
+                            }
+                            item {
+                                Text(
+                                    text = hint,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                )
+                            }
+                        }
+
+                        // 3) selezione del dispositivo
+                        else -> {
+                            item {
+                                ListHeader(
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    transformation = SurfaceTransformation(spec),
+                                ) { Text("Select device") }
+                            }
+                            if (devices.isEmpty()) {
+                                item {
+                                    Text(
+                                        text = "Searching…",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    )
+                                }
+                            }
+                            devices.forEach { d ->
+                                item(key = d.id) {
+                                    Button(
+                                        onClick = { session.pairing.connect(d) },
+                                        enabled = connecting == null,
+                                        modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                        transformation = SurfaceTransformation(spec),
+                                    ) {
+                                        Column {
+                                            Text(d.name, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                            Text(
+                                                "${d.type} · ${d.ip}",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis,
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            connecting?.let { c ->
+                                item {
+                                    Text(
+                                        text = "Connecting to ${c.device.name}…",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    )
+                                }
+                            }
+                            message?.let { m ->
+                                item {
+                                    Text(
+                                        text = m,
+                                        textAlign = TextAlign.Center,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    )
+                                }
+                            }
+                            item {
+                                Text(
+                                    text = hint,
+                                    textAlign = TextAlign.Center,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                )
+                            }
+                        }
                     }
                 }
             }
