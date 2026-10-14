@@ -12,10 +12,8 @@
     <uses-feature android:name="android.hardware.type.watch" />                     <!-- .TYPE.WATCH Dichiara che l'applicazione è progettata specificamente per l'hardware di tipo orologio. -->
 
     <!-- Dichiara l'applicazione Android vera e propria e ne definisce il comportamento globale. -->
-    <!-- [11/10/2026] enableOnBackInvokedCallback="false": disabilita gesture predittiva di sistema per intercettazione tasto BACK fisico -->
     <application
         android:allowBackup="true"
-        android:enableOnBackInvokedCallback="false"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -36,12 +34,11 @@
             android:name="com.google.android.wearable.standalone"
             android:value="true" />
 
-        <!-- Schermata principale: [11/10/2026] excludeFromRecents="true" per escludere l'app dalle 'App Recenti' alla chiusura -->
+        <!-- Schermata principale -->
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
             android:taskAffinity=""
-            android:excludeFromRecents="true"
             android:theme="@style/MainActivityTheme.Starting">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
