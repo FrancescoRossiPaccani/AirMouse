@@ -5,10 +5,8 @@ import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.net.ConnectivityManager
 import android.net.Network
-import android.net.NetworkCapabilities
-import android.net.NetworkRequest
+// --- [10/10/2026] Pairing: rimosse dipendenze dirette da ConnectivityManager (gestite da SessionManager) ---
 import android.os.SystemClock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,20 +23,14 @@ import java.net.InetAddress
 
 class SensorStreamer(
     context: Context,
-    private val host: String,
-    private val port: Int,
+    // --- [10/10/2026] Pairing: rimossi host e port hardcoded dal costruttore (forniti dinamicamente al pairing) ---
     private val onStatus: (String) -> Unit,
 ) : SensorEventListener {
 
     private val sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-    private val connectivityManager =
-        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-
+    // --- [10/10/2026] Pairing: rimossa gestione stato Wi-Fi locale (ora gestita centralmente da SessionManager) ---
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var sendJob: Job? = null
-    private var networkCallback: ConnectivityManager.NetworkCallback? = null
-
-    private val denoiser = WaveletDenoiser(nChannels = 9, window = 64, delay = 4)
 
     // ultimi valori letti (sostituiti per intero ad ogni evento)
     @Volatile private var acc = FloatArray(3)
@@ -51,42 +43,20 @@ class SensorStreamer(
         private const val SENSOR_DELAY_US = 1_000_000 / RATE_HZ // 50 ms
     }
 
-    fun start() {
-        if (networkCallback != null) return
-        onStatus("Cerco Wi-Fi...")
-
-        val request = NetworkRequest.Builder()
-            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .build()
-
-        val cb = object : ConnectivityManager.NetworkCallback() {
-            override fun onAvailable(network: Network) {
-                startSensors()
-                startSending(network)
-            }
-
-            override fun onLost(network: Network) {
-                onStatus("Wi-Fi perso")
-            }
-
-            override fun onUnavailable() {
-                onStatus("Wi-Fi non disponibile")
-                stop()
-            }
-        }
-        networkCallback = cb
-        connectivityManager.requestNetwork(request, cb, 10_000)
+    // --- START [10/10/2026] Pairing: avvio streaming con parametri dinamici di rete ricevuti dal pairing ---
+    fun start(network: Network, host: String, port: Int) {
+        stop()
+        startSensors()
+        startSending(network, host, port)
     }
+    // --- END [10/10/2026] Pairing: avvio streaming con parametri dinamici di rete ricevuti dal pairing ---
 
     fun stop() {
         sensorManager.unregisterListener(this)
         sendJob?.cancel()
         sendJob = null
-        networkCallback?.let {
-            try { connectivityManager.unregisterNetworkCallback(it) } catch (_: Exception) {}
-        }
-        networkCallback = null
-        onStatus("Fermo")
+        // --- [10/10/2026] Pairing: rimossa disconnessione networkCallback da qui (gestita in SessionManager) ---
+        onStatus("Stopped")
     }
 
     private fun startSensors() {
@@ -99,18 +69,18 @@ class SensorStreamer(
             if (sensor != null) {
                 sensorManager.registerListener(this, sensor, SENSOR_DELAY_US)
             } else {
-                onStatus("Sensore mancante: $type")
+                onStatus("Missing sensor: $type")
             }
         }
     }
 
-    private fun startSending(network: Network) {
-        sendJob?.cancel()
+    // --- START [10/10/2026] Pairing: invio flusso UDP verso endpoint dinamico (host, port) su rete Wi-Fi paired ---
+    private fun startSending(network: Network, host: String, port: Int) {
         sendJob = scope.launch {
             var socket: DatagramSocket? = null
             try {
-                // riparte con la finestra del filtro vuota
-                denoiser.reset()
+                // Nuova istanza denoiser con finestra del filtro pulita per la sessione
+                val denoiser = WaveletDenoiser(nChannels = 9, window = 64, delay = 4)
 
                 socket = DatagramSocket()
                 network.bindSocket(socket) // forza il traffico sul Wi-Fi
@@ -128,7 +98,7 @@ class SensorStreamer(
                     val clean = denoiser.update(raw)
 
                     if (clean == null) {
-                        onStatus("Riempimento filtro...")
+                        onStatus("Filling filter…")
                     } else {
                         val json = JSONObject().apply {
                             put("seq", seq++)
@@ -140,7 +110,7 @@ class SensorStreamer(
                         }
                         val bytes = json.toString().toByteArray(Charsets.UTF_8)
                         socket.send(DatagramPacket(bytes, bytes.size, address, port))
-                        onStatus("Invio a $host:$port")
+                        onStatus("Streaming to $host:$port")
                     }
 
                     next += periodMs
@@ -148,12 +118,13 @@ class SensorStreamer(
                     if (wait > 0) delay(wait) else next = SystemClock.elapsedRealtime()
                 }
             } catch (e: Exception) {
-                onStatus("Errore: ${e.message}")
+                if (isActive) onStatus("Error: ${e.message}")
             } finally {
                 socket?.close()
             }
         }
     }
+    // --- END [10/10/2026] Pairing: invio flusso UDP verso endpoint dinamico (host, port) su rete Wi-Fi paired ---
 
     override fun onSensorChanged(event: SensorEvent) {
         when (event.sensor.type) {
