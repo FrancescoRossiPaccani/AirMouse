@@ -1,0 +1,40 @@
+{
+  "W": 32,
+  "WAVELET": "db2",
+  "LEVEL": 3,
+  "USE_MEASURED_DT": false,
+  "BETA": 0.1,
+  "BETA_INIT": 1.0,
+  "INIT_SAMPLES": 40,
+  "PEAK_K": 4,
+  "INTERVAL": 20,
+  "MARGIN": 20,
+  "SLOPE_K": 0.1,
+  "FIT_ERR": 0.05,
+  "K_PER_CLASS": 10,
+  "MAX_CORR": 0.9,
+  "EPOCHS": 30,
+  "TREES_PER_EPOCH": 10,
+  "PATIENCE": 10,
+  "MAX_DEPTH": 10,
+  "MIN_LEAF": 2,
+  "subjects": [
+    "P0",
+    "P1",
+    "P2",
+    "P3",
+    "P4",
+    "P5",
+    "P6",
+    "P7",
+    "P8",
+    "P9"
+  ],
+  "classes": [
+    "MLB",
+    "MRB",
+    "RLB",
+    "RRB",
+    "UDB"
+  ]
+}

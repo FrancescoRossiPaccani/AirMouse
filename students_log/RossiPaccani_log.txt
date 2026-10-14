@@ -4,4 +4,12 @@ In the afternoon we implemented the denoiser
 | +9 commit | + 4294 lines 
 7/10/2026 -> 9/10/2026 
 (single task) I develop a code to record the gesture's data, test and catch some data from my friends
-| +1 commit | + lines 204 + csv file 
+| +1 commit | + 204 lines  + csv file 
+10/10/2026
+(single task) I create a comunication protocol to avoid to set manually the ip address every execution
+| +1 commit | + 341 lines 
+11/10/2026 -> 14/10/206
+(single task) Working on the train.py file to generate the random forest classification model.
+              Test the code and set the parameter in order to maximize the performance metrics
+              It also create some images that could be usefull to make the presentation.
+| +1 commit | +567 lines (+ images)
