@@ -1,0 +1,1 @@
+seq,timestamp_ms,dt_s,state,is_frozen,d_pitch,d_yaw,d_roll,screen_x,screen_y,dx_float,dy_float,pitch,yaw,roll,acc_x,acc_y,acc_z,gyro_x,gyro_y,gyro_z,stream_type
