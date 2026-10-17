@@ -51,6 +51,12 @@ class MainActivity : ComponentActivity() {
         setContent { WearApp(session, holdSeconds) }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Garantisce che lo schermo rimanga sempre acceso per un confronto equo del consumo
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+    }
+
     // Pressione prolungata (3 s) del pulsante: chiude connessione e app.
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK ||

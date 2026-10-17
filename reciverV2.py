@@ -7,7 +7,7 @@ from pairing import PairingServer                       # PAIRING
 HOST = "0.0.0.0"
 PORT = 5005
 
-SHOW_RAW = True  # metti False per stampare solo i dati puliti
+SHOW_RAW = False  # metti False per stampare solo i dati puliti
 
 
 def fmt(v, w=8, d=3):

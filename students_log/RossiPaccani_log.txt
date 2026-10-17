@@ -13,3 +13,6 @@ In the afternoon we implemented the denoiser
               Test the code and set the parameter in order to maximize the performance metrics
               It also create some images that could be usefull to make the presentation.
 | +1 commit | +567 lines (+ images)
+16/10/2026 -> 17/10/2026
+(single task) Working on the App with the BLE connection, I do the same app as wifi but with BLE    
+              I run some test to know the difference energy-consumption beetween Wifi and Ble in this specific application in order to develop the final app with the lowest power consumption possible.
