@@ -3,5 +3,6 @@ Context all device with screen on and 2 active background app:
 	- Google samrt assistent
 
 1) Wifi 1h 100% -> ~73% 
-
 2) BLE  1h 100% -> ~82%
+2) Wifi 1h 100% -> ~74%
+4) BLE  1h 100% -> ~84%
