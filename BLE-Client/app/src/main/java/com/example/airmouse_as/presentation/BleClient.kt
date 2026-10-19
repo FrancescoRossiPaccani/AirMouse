@@ -286,6 +286,14 @@ class BleClient(
         return write(c, bytes)
     }
 
+    // --- START [18/10/2026] Step 9: Invio comandi di controllo su CTRL_UUID ---
+    /** Scrive un comando sulla characteristic CTRL (Write Without Response). */
+    fun sendCtrl(bytes: ByteArray): Boolean {
+        val c = ctrlChar ?: return false
+        return write(c, bytes)
+    }
+    // --- END [18/10/2026] Step 9: Invio comandi di controllo su CTRL_UUID ---
+
     private fun write(c: BluetoothGattCharacteristic, bytes: ByteArray): Boolean {
         val g = gatt ?: return false
         return try {

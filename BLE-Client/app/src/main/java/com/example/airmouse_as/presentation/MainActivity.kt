@@ -24,6 +24,7 @@ import androidx.wear.compose.foundation.lazy.TransformingLazyColumn
 import androidx.wear.compose.foundation.lazy.rememberTransformingLazyColumnState
 import androidx.wear.compose.material3.AppScaffold
 import androidx.wear.compose.material3.Button
+import androidx.wear.compose.material3.ButtonDefaults
 import androidx.wear.compose.material3.ListHeader
 import androidx.wear.compose.material3.MaterialTheme
 import androidx.wear.compose.material3.ScreenScaffold
@@ -135,6 +136,9 @@ fun WearApp(session: SessionManager, holdSeconds: Int?) {
             val pairState by session.ble.state.collectAsState()
             val message by session.ble.message.collectAsState()
             val streamStatus by session.streamStatus.collectAsState()
+            // --- START [18/10/2026] Step 9: Osservazione dello stato Pausa ---
+            val isPaused by session.isPaused.collectAsState()
+            // --- END [18/10/2026] Step 9: Osservazione dello stato Pausa ---
 
             val connected = pairState as? PairState.Connected
             val connecting = pairState as? PairState.Connecting
@@ -199,6 +203,26 @@ fun WearApp(session: SessionManager, holdSeconds: Int?) {
                                     modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
                                 )
                             }
+                            // --- START [18/10/2026] Step 9: Pulsante Pausa / Ripresa sullo schermo Wear OS ---
+                            item {
+                                Button(
+                                    onClick = { session.togglePause() },
+                                    modifier = Modifier.fillMaxWidth().transformedHeight(this, spec),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = if (isPaused)
+                                            MaterialTheme.colorScheme.primary
+                                        else
+                                            MaterialTheme.colorScheme.tertiary
+                                    )
+                                ) {
+                                    Text(
+                                        text = if (isPaused) "RIPRENDI" else "PAUSA",
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                }
+                            }
+                            // --- END [18/10/2026] Step 9: Pulsante Pausa / Ripresa sullo schermo Wear OS ---
                             item {
                                 Text(
                                     text = hint,

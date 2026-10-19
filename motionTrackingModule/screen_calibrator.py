@@ -69,9 +69,11 @@ class ScreenCalibrator:
     @staticmethod
     def detect_all_monitors() -> list:
         """
-        Rileva tutti i monitor connessi su Windows con le rispettive coordinate virtuali e risoluzioni reali DPI-aware.
-        Supporta configurazioni multi-monitor (es. schermo integrato laptop + monitor esterno ultrawide).
+        Rileva tutti i monitor connessi con le rispettive coordinate virtuali e risoluzioni reali DPI-aware.
+        Supporta configurazioni multi-monitor cross-platform (Windows, Linux, macOS).
         """
+        # --- START [18/10/2026] Step 8: Rilevamento monitor multi-piattaforma ---
+        # 1. Rilevamento DPI-Aware nativo su Windows
         if sys.platform == "win32":
             try:
                 import ctypes
@@ -133,8 +135,59 @@ class ScreenCalibrator:
             except Exception:
                 pass
 
+        # 2. Rilevamento cross-platform tramite libreria screeninfo (Linux / macOS / fallback Windows)
+        try:
+            import screeninfo
+            s_monitors = screeninfo.get_monitors()
+            if s_monitors:
+                monitors = []
+                for idx, m in enumerate(s_monitors):
+                    monitors.append({
+                        'index': idx,
+                        'handle': None,
+                        'left': int(m.x),
+                        'top': int(m.y),
+                        'right': int(m.x + m.width),
+                        'bottom': int(m.y + m.height),
+                        'width': int(m.width),
+                        'height': int(m.height),
+                        'center_x': int(m.x + m.width // 2),
+                        'center_y': int(m.y + m.height // 2),
+                        'is_primary': getattr(m, 'is_primary', idx == 0)
+                    })
+                return monitors
+        except Exception:
+            pass
+
+        # 3. Fallback grafico cross-platform (tkinter)
+        try:
+            import tkinter as tk
+            root = tk.Tk()
+            root.withdraw()
+            w = root.winfo_screenwidth()
+            h = root.winfo_screenheight()
+            root.destroy()
+            if w > 0 and h > 0:
+                return [{
+                    'index': 0,
+                    'handle': None,
+                    'left': 0,
+                    'top': 0,
+                    'right': int(w),
+                    'bottom': int(h),
+                    'width': int(w),
+                    'height': int(h),
+                    'center_x': int(w // 2),
+                    'center_y': int(h // 2),
+                    'is_primary': True
+                }]
+        except Exception:
+            pass
+        # --- END [18/10/2026] Step 8: Rilevamento monitor multi-piattaforma ---
+
         return [{
             'index': 0,
+            'handle': None,
             'left': 0,
             'top': 0,
             'right': 1920,
@@ -150,8 +203,14 @@ class ScreenCalibrator:
     def get_monitor_at_cursor(monitors: list) -> int:
         """
         Rileva l'indice del monitor su cui si trova attualmente il cursore del mouse.
+        Supporta Windows nativo (Win32) e pynput (cross-platform).
         """
-        if sys.platform == "win32" and monitors:
+        if not monitors:
+            return 0
+
+        # --- START [18/10/2026] Step 8: Rilevamento posizione cursore per monitor attivo cross-platform ---
+        # Metodo 1: Win32 nativo su Windows
+        if sys.platform == "win32":
             try:
                 import ctypes
                 from ctypes import wintypes
@@ -162,6 +221,18 @@ class ScreenCalibrator:
                         return m['index']
             except Exception:
                 pass
+
+        # Metodo 2: Cross-platform via pynput
+        try:
+            from pynput.mouse import Controller
+            cur_pos = Controller().position
+            cur_x, cur_y = int(cur_pos[0]), int(cur_pos[1])
+            for m in monitors:
+                if m['left'] <= cur_x < m['right'] and m['top'] <= cur_y < m['bottom']:
+                    return m['index']
+        except Exception:
+            pass
+        # --- END [18/10/2026] Step 8: Rilevamento posizione cursore per monitor attivo cross-platform ---
         return 0
 
     def sync_active_monitor_from_cursor(self) -> bool:

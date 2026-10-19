@@ -44,6 +44,25 @@ class SensorStreamer(
         private const val SIZE_FULL = SIZE_CLEAN + RAW_BYTES       // 80
     }
 
+    // --- START [18/10/2026] Step 9: Controllo dello streaming con modalità Pausa / Ripresa ---
+    @Volatile var isPaused: Boolean = false
+        private set
+
+    fun pause(ble: BleClient? = null) {
+        if (isPaused) return
+        isPaused = true
+        ble?.sendCtrl("pause".toByteArray(Charsets.UTF_8))
+        onStatus("PAUSA (Streaming Sospeso)")
+    }
+
+    fun resume(ble: BleClient? = null) {
+        if (!isPaused) return
+        isPaused = false
+        ble?.sendCtrl("resume".toByteArray(Charsets.UTF_8))
+        onStatus("Ripresa...")
+    }
+    // --- END [18/10/2026] Step 9: Controllo dello streaming con modalità Pausa / Ripresa ---
+
     fun start(ble: BleClient) {
         stop()
         startSensors()
@@ -51,6 +70,9 @@ class SensorStreamer(
     }
 
     fun stop() {
+        // --- START [18/10/2026] Step 9: Reset stato pausa allo stop ---
+        isPaused = false
+        // --- END [18/10/2026] Step 9: Reset stato pausa allo stop ---
         sensorManager.unregisterListener(this)
         sendJob?.cancel()
         sendJob = null
@@ -82,6 +104,14 @@ class SensorStreamer(
                 var next = SystemClock.elapsedRealtime()
 
                 while (isActive) {
+                    // --- START [18/10/2026] Step 9: Sospensione campionamento e invio in pausa ---
+                    if (isPaused) {
+                        delay(100)
+                        next = SystemClock.elapsedRealtime()
+                        continue
+                    }
+                    // --- END [18/10/2026] Step 9: Sospensione campionamento e invio in pausa ---
+
                     val raw = floatArrayOf(
                         acc[0], acc[1], acc[2],
                         gyro[0], gyro[1], gyro[2],

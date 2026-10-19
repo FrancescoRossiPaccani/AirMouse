@@ -29,6 +29,33 @@ class SessionManager(context: Context) {
     val notice: StateFlow<String?> = _notice.asStateFlow()
     val streamStatus: StateFlow<String> = _streamStatus.asStateFlow()
 
+    // --- START [18/10/2026] Step 9: Gestione stato Pausa e toggle per UI Wear OS ---
+    private val _isPaused = MutableStateFlow(false)
+    val isPaused: StateFlow<Boolean> = _isPaused.asStateFlow()
+
+    fun togglePause() {
+        if (_isPaused.value) {
+            resume()
+        } else {
+            pause()
+        }
+    }
+
+    fun pause() {
+        if (!_isPaused.value) {
+            _isPaused.value = true
+            streamer.pause(ble)
+        }
+    }
+
+    fun resume() {
+        if (_isPaused.value) {
+            _isPaused.value = false
+            streamer.resume(ble)
+        }
+    }
+    // --- END [18/10/2026] Step 9: Gestione stato Pausa e toggle per UI Wear OS ---
+
     @Volatile private var started = false   // true solo dopo la concessione dei permessi
     @Volatile private var closed = false
     private var receiverRegistered = false
@@ -37,8 +64,14 @@ class SessionManager(context: Context) {
 
     val ble: BleClient = BleClient(
         context = appContext,
-        onConnected = { streamer.start(ble) },
-        onLost = { streamer.stop() },
+        onConnected = {
+            _isPaused.value = false
+            streamer.start(ble)
+        },
+        onLost = {
+            _isPaused.value = false
+            streamer.stop()
+        },
     )
 
     // Reagisce all'accensione / spegnimento del Bluetooth mentre l'app è aperta.
