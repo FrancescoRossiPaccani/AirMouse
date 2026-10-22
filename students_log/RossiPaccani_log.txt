@@ -16,7 +16,7 @@ In the afternoon we implemented the denoiser
 16/10/2026 -> 18/10/2026
 (single task) Working on the App with the BLE connection, I do the same app as wifi but with BLE    
               I run some test to know the difference energy-consumption beetween Wifi and Ble in this specific application in order to develop the final app with the lowest power consumption possible.
-| +4 commit | + 2668 lines
+| +4 commit | + 2668 lines (including the android studio project files)
 19/10/2026 
 (single task) Done some test and try to enanche the mouse model in order to have a better precision
               Done some test in a new file version (just copy and paste the old one and make a modification)
@@ -26,5 +26,5 @@ In the afternoon we implemented the denoiser
 (group work) Git folder reorganizzation
              Try to write the new application in koltin
              Just make an application that print the recived datas
-| +1 commit | +45 + +21 + 29 + 14 (grandle)
+| +2 commit | +45 + +21 + 29 + 28 (grandle) + 91 + 22   (without the kotlin files)
 

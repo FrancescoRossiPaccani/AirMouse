@@ -11,7 +11,7 @@ class ImuPacket(
     val seq: Int,
     val tMs: Int,
     val clean: FloatArray,   // acc(3), gyro(3), mag(3) filtrati
-    val raw: FloatArray?,    // acc(3), gyro(3), mag(3) grezzi (se presenti)
+    val raw: FloatArray?,    // acc(3), gyro(3), mag(3) grezzi
 )
 
 sealed interface BridgeEvent {
