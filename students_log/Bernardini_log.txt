@@ -14,6 +14,8 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
 * Details:
   - Studied reference research paper.
   - Prepared Paper presentation.
+  - Added some comments
+* Git : +1 commits 
 
 [08/10/2026] (3.5h) - INDIVIDUAL WORK
 * Topic: AHRS Attitude Estimation & 3D Sensor Fusion (ahrs.py)
@@ -47,6 +49,24 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
 [12/10/2026] (2.5h) - INDIVIDUAL WORK
 * Topic: Code Cleanup & Testing
 * Details:
-  - Cleaned up the code and removed the CSV logging that was slowing down execution.
-  - Updated the project specifications markdown file.
+  - Code cleanup
   - Tested everything together on single and dual monitor setups.
+
+[14/10/2026] (2.0h) - INDIVIDUAL WORK
+* Topic: Code Cleanup & Testing
+* Details:
+  - Added MotionTrackingModule (in python)
+  - Created receiverV1.py
+* Git: +1 commits | ~+2000 lines of code 
+
+[19/10/2026] (2.0h) - INDIVIDUAL WORK
+* Optimizations
+  - Try to optimize the application
+  - Created a new version reciverV2.py
+* Git: +1 commits | +2842-396 lines of code
+
+(22/10/2026)
+(group work) Git folder reorganizzation
+             Try to write the new application in koltin
+             Just make an application that print the recived datas
+| +1 commit | +45 + +21 + 29 + 28 (grandle)

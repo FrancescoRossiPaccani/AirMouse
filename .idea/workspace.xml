@@ -5,9 +5,58 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="abcd8598-a02b-4d8a-b118-28a83d55137d" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/AirMouse.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/BridgeEvent.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/ForestModel.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/GestureActions.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/GestureGuard.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/GestureRecognizer.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/LaserOverlay.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/MouseDriver.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/SamplePreprocessor.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/TrakingModule.kt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/serverBle/src/main/kotlin/WaveletDenoiser.kt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/reciverV2.py" beforeDir="false" afterPath="$PROJECT_DIR$/reciverV2.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/lint.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/AndroidManifest.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/java/com/example/airmouse_as/presentation/BleClient.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/java/com/example/airmouse_as/presentation/MainActivity.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/java/com/example/airmouse_as/presentation/SensorStreamer.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/java/com/example/airmouse_as/presentation/SessionManager.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/java/com/example/airmouse_as/presentation/WaveletDenoiser.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/java/com/example/airmouse_as/presentation/theme/Theme.kt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/keepRules/rules.keep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/drawable/ic_launcher_background.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/drawable/ic_launcher_foreground.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/drawable/splash_icon.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-anydpi/ic_launcher.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-anydpi/ic_launcher_round.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-hdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-hdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-mdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-mdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-xhdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-xxhdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/values/strings.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/app/src/main/res/values/styles.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/build.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradle.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradle/gradle-daemon-jvm.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradle/libs.versions.toml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/BLE-Client/settings.gradle.kts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/students_log/RossiPaccani_log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/students_log/RossiPaccani_log.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -18,6 +67,23 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="device_and_snapshot_combo_box_target[]" />
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="BLE-client" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -45,7 +111,7 @@
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "git-widget-placeholder": "main",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/pacca/Desktop/Mobile/AirMouse/AndroidStudio",
+    "last_opened_file_path": "/home/pacca/Desktop/BLE-Client",
     "nodejs_package_manager_path": "npm"
   }
 }]]></component>
