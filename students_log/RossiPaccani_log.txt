@@ -31,4 +31,8 @@ In the afternoon we implemented the denoiser
 | +2 commit | +45 + +21 + 29 + 28 (grandle) + 91 + 22 (without the kotlin files)
 
 23/10/2026 -> 24/10/2026
+             Added some classes in order to make the gesture recognition.
+             Expetially I implement the feature selected form the train model (GestureFeature,kt) and make the forest model just importing the rf.json file (ForestModel.kt)
+             Make small modification in gestureGuard and implemented the recognizer.
+| +2 commit | 188 + 51 + 54 + 10 
 
