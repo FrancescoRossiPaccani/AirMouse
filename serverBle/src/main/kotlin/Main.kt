@@ -3,7 +3,9 @@ import kotlinx.coroutines.runBlocking
 fun main() {
     val guard = GestureGuard()
     val tracking = TrackingModule()
-    val recognizer = GestureRecognizer()
+    val model = ForestModel.load("model/rf.json")
+    val recognizer = GestureRecognizer(model)
+    println("Modello caricato: classi ${model.classes}, ${model.trees.size} alberi")
 
     runBlocking {
         println("In ascolto su UDP 127.0.0.1:9000 ...")
@@ -12,9 +14,7 @@ fun main() {
                 is BridgeEvent.Sample -> {
                     when (val decision = guard.update(event.packet)) {
                         GuardDecision.Tracking -> tracking.onSample(event.packet)
-                        GuardDecision.Buffering -> {
-                            // cursore congelato => non faccio nulla
-                        }
+                        GuardDecision.Buffering -> { }
                         is GuardDecision.GestureComplete -> recognizer.onGesture(decision.window)
                     }
                 }

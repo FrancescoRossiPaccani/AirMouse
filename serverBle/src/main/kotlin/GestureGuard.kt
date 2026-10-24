@@ -3,24 +3,31 @@ import kotlin.math.sqrt
 enum class Mode { TRACKING, GESTURE, COOLDOWN }
 
 sealed interface GuardDecision {
-    data object Tracking : GuardDecision                       // movimento normale
-    data object Buffering : GuardDecision                      // cursore congelato
+    data object Tracking : GuardDecision
+    data object Buffering : GuardDecision
     data class GestureComplete(val window: List<ImuPacket>) : GuardDecision
 }
 
 class GestureGuard(
-    private val rateOnDps: Double = 100.0,     // sopra: gesto
-    private val rateOffDps: Double = 40.0,     // sotto: tracking
-    private val settleSamples: Int = 5,        // campioni per chiudere il gesto
-    private val maxGestureSamples: Int = 25,   // sicurezza: oltre non era un gesto
-    private val cooldownSamples: Int = 20,     // pausa dopo un gesto
+    private val rateOnDps: Double = 100.0,
+    private val rateOffDps: Double = 40.0,
+    private val settleSamples: Int = 5,
+    private val maxGestureSamples: Int = 30,
+    private val cooldownSamples: Int = 20,
+    private val preRoll: Int = 4,              // campioni da tenere prima dello scatto
 ) {
     var mode = Mode.TRACKING
         private set
 
     private val window = mutableListOf<ImuPacket>()
+    private val history = ArrayDeque<ImuPacket>()
     private var calm = 0
     private var cooldown = 0
+
+    private fun remember(p: ImuPacket) {
+        history.addLast(p)
+        while (history.size > preRoll) history.removeFirst()
+    }
 
     fun update(p: ImuPacket): GuardDecision {
         val rate = rateDps(p)
@@ -30,10 +37,12 @@ class GestureGuard(
                 if (rate > rateOnDps) {
                     mode = Mode.GESTURE
                     window.clear()
+                    window.addAll(history)
                     window += p
                     calm = 0
                     return GuardDecision.Buffering
                 }
+                remember(p)
                 return GuardDecision.Tracking
             }
 
@@ -44,18 +53,20 @@ class GestureGuard(
                 if (calm >= settleSamples) {
                     mode = Mode.COOLDOWN
                     cooldown = cooldownSamples
+                    history.clear()
                     return GuardDecision.GestureComplete(window.toList())
                 }
                 if (window.size > maxGestureSamples) {
-                    // troppo lungo: era un movimento veloce, non un gesto
                     mode = Mode.TRACKING
                     window.clear()
+                    history.clear()
                     return GuardDecision.Tracking
                 }
                 return GuardDecision.Buffering
             }
 
             Mode.COOLDOWN -> {
+                remember(p)
                 if (--cooldown <= 0) mode = Mode.TRACKING
                 return GuardDecision.Tracking
             }
@@ -65,12 +76,11 @@ class GestureGuard(
     fun reset() {
         mode = Mode.TRACKING
         window.clear()
+        history.clear()
         calm = 0
         cooldown = 0
     }
 
-    // Velocità angolare in gradi/s
-    // Il giroscopio arriva in rad/s
     private fun rateDps(p: ImuPacket): Double {
         val a = p.raw ?: p.clean
         val gx = a[3].toDouble()

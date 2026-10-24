@@ -26,5 +26,9 @@ In the afternoon we implemented the denoiser
 (group work) Git folder reorganizzation
              Try to write the new application in koltin
              Just make an application that print the recived datas
-| +2 commit | +45 + +21 + 29 + 28 (grandle) + 91 + 22   (without the kotlin files)
+             After that (in the afternoon) we added GestureGuard in order to detect the gesture or the tracking state. 
+             Added also GestureRecognizer and TrakingModule as a test class to test via a print the guard.
+| +2 commit | +45 + +21 + 29 + 28 (grandle) + 91 + 22 (without the kotlin files)
+
+23/10/2026 -> 24/10/2026
 
