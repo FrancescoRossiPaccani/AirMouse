@@ -1,7 +1,7 @@
 STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
 ================================================================================
 
-[06/10/2026] (5.0h) - GROUP WORK (with F. Rossi Paccani)
+[06/10/2026] - GROUP WORK (with F. Rossi Paccani)
 * Topic: Architecture, Connectivity & IMU Denoiser
 * Details:
   - Brainstorming session to decide architecture and implementation.
@@ -9,7 +9,7 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
   - Implemented the denoising filter.
 * Git: +9 commits | +4294 lines of code (reciverV0.py, base setup)
 
-[07/10/2026] (2.0h) - INDIVIDUAL WORK
+[07/10/2026] - INDIVIDUAL WORK
 * Topic: Motion Tracking & Literature Review
 * Details:
   - Studied reference research paper.
@@ -17,14 +17,14 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
   - Added some comments
 * Git : +1 commits 
 
-[08/10/2026] (3.5h) - INDIVIDUAL WORK
+[08/10/2026] - INDIVIDUAL WORK
 * Topic: AHRS Attitude Estimation & 3D Sensor Fusion (ahrs.py)
 * Details:
   - Implemented the code for the AHRS algorithm to convert raw data from sensor to Eulero's angles.
   - Printed angles on shell and smartwatch to test algorithm.
 * Code: ~170 lines (ahrs.py)
 
-[09/10/2026] (4.5h) - INDIVIDUAL WORK
+[09/10/2026] - INDIVIDUAL WORK
 * Topic: Anti-Jumping & Mouse Movement (gesture_detector.py, mouse_mapper.py, mouse_controller.py)
 * Details:
   - Added anti-jumping state machine to freeze the mouse during wrist clicks so the cursor doesn't jump.
@@ -32,13 +32,13 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
   - Added mouse controller to move the PC cursor with ctypes and tested it on the desktop.
 * Code: ~347 lines (gesture_detector.py, mouse_mapper.py, mouse_controller.py)
 
-[10/10/2026] (3.0h) - GROUP WORK (with F. Rossi Paccani)
+[10/10/2026] - GROUP WORK (with F. Rossi Paccani)
 * Topic: Integration with Pairing System
 * Details:
   - Connected the mouse receiver with the automatic pairing script developed by my colleague.
   - Tested connection between smartwatch and PC on local Wi-Fi without manual IP.
 
-[11/10/2026] (4.5h) - INDIVIDUAL WORK
+[11/10/2026] - INDIVIDUAL WORK
 * Topic: Screen Calibration & Multi-Monitor Support (screen_calibrator.py, mouse_mapper.py)
 * Details:
   - Added screen calibrator to adapt mouse movement to screen size and support multiple monitors.
@@ -46,29 +46,46 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
   - Added keyboard shortcuts to quickly recenter the cursor (SPACE) and switch monitor (TAB).
 * Code: ~261 lines (screen_calibrator.py)
 
-[12/10/2026] (2.5h) - INDIVIDUAL WORK
+[12/10/2026] - INDIVIDUAL WORK
 * Topic: Code Cleanup & Testing
 * Details:
   - Code cleanup
   - Tested everything together on single and dual monitor setups.
 
-[14/10/2026] (2.0h) - INDIVIDUAL WORK
+[14/10/2026] - INDIVIDUAL WORK
 * Topic: Code Cleanup & Testing
 * Details:
   - Added MotionTrackingModule (in python)
   - Created receiverV1.py
 * Git: +1 commits | ~+2000 lines of code 
 
-[19/10/2026] (2.0h) - INDIVIDUAL WORK
+[19/10/2026] - INDIVIDUAL WORK
 * Optimizations
-  - Try to optimize the application
+  - Tried to optimize the application
   - Created a new version reciverV2.py
 * Git: +1 commits | +2842-396 lines of code
 
-(22/10/2026)
-(group work) Git folder reorganizzation
-             Try to write the new application in koltin
-             Just make an application that print the recived datas
-             After that (in the afternoon) we added GestureGuard in order to detect the gesture or the tracking state. 
-             Added also GestureRecognizer and TrakingModule as a test class to test via a print the guard.
+[22/10/2026] - GROUP WORK
+* Git folder reorganizzation
+* Tried to write the new application in koltin
+* Just make an application that print the recived datas
+* After that (in the afternoon) we added GestureGuard in order to detect the gesture or the tracking state. 
+* Added also GestureRecognizer and TrakingModule as a test class to test via a print the guard.
 | +2 commit | +45 + +21 + 29 + 28 (grandle) + 91 + 22 (without the kotlin files)
+
+[23/10/2026] - INDIVIDUAL WORK
+* Motion Tracking
+  - Tried to implement Motion Tracking module.
+* Modified bridge.py
+  - Added some classes for Windows
+
+[24/10/2026] - INDIVIDUAL WORK
+* Motion Tracking
+  - Tried to implemente TrackingModule.kt, MouseDriver.kt, GestureAction.kt in kotlin
+
+[25/10/2026] - INDIVIDUAL WORK  
+* Motion Tracking
+  - Added TrackingModule.kt, MouseDriver.kt, GestureAction.kt
+  - Modified Main.kt
+* Updated Log
+* Git: +1 commits | +227 / -23 lines of code

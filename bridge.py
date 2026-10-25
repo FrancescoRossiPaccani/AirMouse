@@ -1,5 +1,17 @@
-import asyncio, socket
+import asyncio, socket, sys
 from bless import BlessServer, GATTAttributePermissions, GATTCharacteristicProperties
+
+
+if sys.platform == "win32":
+    # Workaround per BLEAdapter del backend WinRT di bless (CreateFile fallisce)
+    import bless.backends.winrt.server as bless_winrt
+
+    class DummyAdapter:
+        def __init__(self, *a, **kw): pass
+        def __getattr__(self, name):
+            return lambda *a, **kw: None
+
+    bless_winrt.BLEAdapter = DummyAdapter
 
 SERVICE_UUID = "7a1c0001-4f5e-4b8a-9d3c-2e6f1a0b5c01"
 DATA_UUID    = "7a1c0002-4f5e-4b8a-9d3c-2e6f1a0b5c01"
