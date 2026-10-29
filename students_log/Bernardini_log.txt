@@ -96,4 +96,4 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
   - Searched for possible improvements
   - Tested new bias calculus and updating
 * Updated Log
-* Git: +1 commits | + / - lines of code
+* Git: +1 commits | +67 / -19 lines of code
