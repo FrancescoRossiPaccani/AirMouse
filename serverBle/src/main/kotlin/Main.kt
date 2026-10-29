@@ -1,6 +1,6 @@
 import kotlinx.coroutines.runBlocking
 
-const val USE_RAW_GYRO = false   // true: giroscopio grezzo | false: giroscopio filtrato
+const val USE_RAW_GYRO = true   // true: giroscopio grezzo | false: giroscopio filtrato
 
 fun main() {
     val mouse = RobotMouseDriver()
