@@ -97,3 +97,12 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
   - Tested new bias calculus and updating
 * Updated Log
 * Git: +1 commits | +67 / -19 lines of code
+
+30/10/2026 
+(group work) Enhanched the user interface on the smartwach app.
+             Particularry we designed: 
+                - a big button with mouse icon and laser pointer icon that can change (mouse/pointer action)
+                - 2 small button (+/-) in order to increment the dpi (dot per inches) of the mouse
+                - a play/stop button
+                - a stop button
+             The server side in no updated for handle the new action (we only work on the watch app)

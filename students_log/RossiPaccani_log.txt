@@ -31,8 +31,19 @@ In the afternoon we implemented the denoiser
 | +2 commit | +45 + +21 + 29 + 28 (grandle) + 91 + 22 (without the kotlin files)
 
 23/10/2026 -> 24/10/2026
-             Added some classes in order to make the gesture recognition.
-             Expetially I implement the feature selected form the train model (GestureFeature,kt) and make the forest model just importing the rf.json file (ForestModel.kt)
-             Make small modification in gestureGuard and implemented the recognizer.
+(single work) Added some classes in order to make the gesture recognition.
+              Expetially I implement the feature selected form the train model (GestureFeature,kt) and make the forest model just importing the rf.json file (ForestModel.kt)
+              Make small modification in gestureGuard and implemented the recognizer.
 | +2 commit | 188 + 51 + 54 + 10 
+
+30/10/2026 
+(group work) Enhanched the user interface on the smartwach app.
+             Particularry we designed: 
+                - a big button with mouse icon and laser pointer icon that can change (mouse/pointer action)
+                - 2 small button (+/-) in order to increment the dpi (dot per inches) of the mouse
+                - a play/stop button
+                - a stop button
+             The server side in no updated for handle the new action (we only work on the watch app)
+         
+            
 
