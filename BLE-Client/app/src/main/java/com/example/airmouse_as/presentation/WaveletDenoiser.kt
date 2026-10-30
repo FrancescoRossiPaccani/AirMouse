@@ -33,7 +33,7 @@ class WaveletDenoiser(
         require(n % (1 shl levels) == 0)
     }
 
-    /** Ritorna i valori puliti (ritardati di [delay] campioni) o null finché la finestra non è piena. */
+    // Ritorna i valori puliti finché la finestra non è piena.
     fun update(sample: FloatArray): FloatArray? {
         for (c in 0 until nChannels) {
             val b = buf[c]
@@ -83,11 +83,11 @@ class WaveletDenoiser(
             a = ap
         }
 
-        // soglia universale con sigma dal dettaglio più fine
+        // soglia universale con sigma più fine
         val sigma = median(details[0].map { kotlin.math.abs(it) }) / 0.6745
         val thr = sigma * sqrt(2.0 * ln(n.toDouble()))
 
-        // coefficienti grandi = segnale (tenuti), piccoli = rumore (azzerati)
+        // coefficienti grandi = segnale, piccoli = rumore da azzerare
         for (d in details) {
             for (i in d.indices) {
                 val v = d[i]
@@ -100,7 +100,7 @@ class WaveletDenoiser(
             }
         }
 
-        // ricostruzione (trasposta della decomposizione)
+        // ricostruzione
         var rec = a
         for (lvl in levels - 1 downTo 0) {
             val d = details[lvl]

@@ -10,12 +10,19 @@ import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class SessionManager(context: Context) {
+
+    companion object {
+        const val DPI_LEVELS = 6      // deve coincidere con AirMouse.SENSITIVITY sul PC
+        const val DPI_DEFAULT = 2
+    }
 
     private val appContext = context.applicationContext
     private val adapter: BluetoothAdapter? =
@@ -29,44 +36,34 @@ class SessionManager(context: Context) {
     val notice: StateFlow<String?> = _notice.asStateFlow()
     val streamStatus: StateFlow<String> = _streamStatus.asStateFlow()
 
-    // --- START [18/10/2026] Step 9: Gestione stato Pausa e toggle per UI Wear OS ---
     private val _isPaused = MutableStateFlow(false)
     val isPaused: StateFlow<Boolean> = _isPaused.asStateFlow()
 
-    fun togglePause() {
-        if (_isPaused.value) {
-            resume()
-        } else {
-            pause()
-        }
-    }
+    private val _laser = MutableStateFlow(false)
+    private val _dpi = MutableStateFlow(DPI_DEFAULT)
+    val laser: StateFlow<Boolean> = _laser.asStateFlow()
+    val dpi: StateFlow<Int> = _dpi.asStateFlow()
 
-    fun pause() {
-        if (!_isPaused.value) {
-            _isPaused.value = true
-            streamer.pause(ble)
-        }
-    }
-
-    fun resume() {
-        if (_isPaused.value) {
-            _isPaused.value = false
-            streamer.resume(ble)
-        }
-    }
-    // --- END [18/10/2026] Step 9: Gestione stato Pausa e toggle per UI Wear OS ---
-
-    @Volatile private var started = false   // true solo dopo la concessione dei permessi
+    @Volatile private var started = false
     @Volatile private var closed = false
+    @Volatile private var autoReconnect = false
+    @Volatile private var lastDeviceId: String? = null
     private var receiverRegistered = false
+
+    // Coda ordinata per i comandi CTRL
+    private val ctrlQueue = Channel<String>(Channel.UNLIMITED)
+    private fun sendCtrl(msg: String) { ctrlQueue.trySend(msg) }
 
     private val streamer = SensorStreamer(appContext) { _streamStatus.value = it }
 
     val ble: BleClient = BleClient(
         context = appContext,
-        onConnected = {
+        onConnected = { device ->
             _isPaused.value = false
+            lastDeviceId = device.id
+            autoReconnect = true
             streamer.start(ble)
+            syncState()
         },
         onLost = {
             _isPaused.value = false
@@ -74,7 +71,77 @@ class SessionManager(context: Context) {
         },
     )
 
-    // Reagisce all'accensione / spegnimento del Bluetooth mentre l'app è aperta.
+    init {
+        // Svuota la coda dei comandi, ritentando se la scrittura BLE risulta occupata
+        ioScope.launch {
+            for (msg in ctrlQueue) {
+                var tries = 0
+                while (tries < 10 && !ble.sendCtrl(msg.toByteArray(Charsets.UTF_8))) {
+                    delay(40)
+                    tries++
+                }
+            }
+        }
+        // Se la connessione cade, si riconnette da sola all'ultimo dispositivo
+        ioScope.launch {
+            ble.devices.collect { list ->
+                val id = lastDeviceId
+                if (autoReconnect && id != null && !closed && ble.state.value is PairState.Searching) {
+                    list.firstOrNull { it.id == id }?.let { ble.connect(it) }
+                }
+            }
+        }
+    }
+
+    // comandi
+    fun togglePause() = if (_isPaused.value) resume() else pause()
+
+    fun pause() {
+        if (_isPaused.value) return
+        _isPaused.value = true
+        streamer.pause()
+        sendCtrl("pause")
+    }
+
+    fun resume() {
+        if (!_isPaused.value) return
+        _isPaused.value = false
+        streamer.resume()
+        sendCtrl("resume")
+    }
+
+    fun toggleLaser() {
+        _laser.value = !_laser.value
+        sendCtrl("mode:${if (_laser.value) "laser" else "mouse"}")
+    }
+
+    fun dpiUp() = setDpi(_dpi.value + 1)
+    fun dpiDown() = setDpi(_dpi.value - 1)
+
+    private fun setDpi(v: Int) {
+        val n = v.coerceIn(0, DPI_LEVELS - 1)
+        if (n != _dpi.value) {
+            _dpi.value = n
+            sendCtrl("dpi:$n")
+        }
+    }
+
+    // Riallinea il PC allo stato dell'orologio
+    private fun syncState() =
+        sendCtrl("sync:${if (_laser.value) "laser" else "mouse"}:${_dpi.value}")
+
+    //chiude la connessione e torna alla lista dei dispositivi
+    fun disconnectToList() {
+        autoReconnect = false
+        _isPaused.value = false
+        ioScope.launch {
+            streamer.stop()
+            ble.disconnect()   // invia "bye"
+            ble.start()
+        }
+    }
+
+    // BLE
     private val btReceiver = object : BroadcastReceiver() {
         override fun onReceive(c: Context, intent: Intent) {
             if (intent.action != BluetoothAdapter.ACTION_STATE_CHANGED) return
@@ -86,7 +153,6 @@ class SessionManager(context: Context) {
         }
     }
 
-    /** Da chiamare dopo che i permessi BLE sono stati concessi. */
     fun start() {
         if (closed) return
         started = true
@@ -102,7 +168,6 @@ class SessionManager(context: Context) {
         applyBluetoothState()
     }
 
-    /** Chiamata da MainActivity se l'utente nega i permessi. */
     fun onPermissionDenied() {
         _bleReady.value = false
         _notice.value = "Bluetooth permission required"
@@ -133,9 +198,9 @@ class SessionManager(context: Context) {
         _notice.value = "Bluetooth off"
     }
 
-    /** Graceful shutdown: stop streaming, tell the PC "bye", release Bluetooth. */
     suspend fun shutdown() {
         if (closed) return
+        autoReconnect = false
         closed = true
         streamer.stop()
         ble.disconnect()
@@ -146,7 +211,6 @@ class SessionManager(context: Context) {
         }
     }
 
-    /** For onDestroy (not suspending). */
     fun release() {
         if (!closed) ioScope.launch { shutdown() }
     }

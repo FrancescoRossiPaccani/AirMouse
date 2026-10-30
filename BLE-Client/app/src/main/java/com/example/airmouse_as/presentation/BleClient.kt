@@ -44,7 +44,7 @@ sealed interface PairState {
 }
 
 /**
- * Scan BLE + connessione GATT verso il PC (che fa da GATT server / periferica).
+ * Scan BLE + connessione GATT verso il PC (che fa da GATT server)
  * Il watch è il central: scansiona il service UUID, si connette e scrive i pacchetti
  * dei sensori sulla characteristic DATA con Write Without Response.
  */
@@ -94,15 +94,14 @@ class BleClient(
     private var pruneJob: Job? = null
     private var timeoutJob: Job? = null
 
-    // ------------------------------------------------------------ lifecycle
-    /** Avvia lo scan (il Bluetooth deve essere acceso). */
+
+
     fun start() {
         closing = false
         _message.value = null
         startScan()
     }
 
-    /** Stop brusco (es. Bluetooth spento). */
     fun stop() {
         closing = true
         timeoutJob?.cancel(); timeoutJob = null
@@ -116,7 +115,6 @@ class BleClient(
         _state.value = PairState.Searching
     }
 
-    /** Chiusura pulita: avvisa il PC ("bye") e si scollega. */
     suspend fun disconnect() {
         closing = true
         timeoutJob?.cancel(); timeoutJob = null
@@ -139,7 +137,7 @@ class BleClient(
         _state.value = PairState.Searching
     }
 
-    // ----------------------------------------------------------------- scan
+    //Scan devices
     private val scanCb = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, r: ScanResult) {
             val d = Device(
@@ -197,7 +195,7 @@ class BleClient(
         }
     }
 
-    // ----------------------------------------------------------- connessione
+
     fun connect(device: Device) {
         if (_state.value !is PairState.Searching) return
         closing = false
@@ -243,7 +241,7 @@ class BleClient(
             val data = service?.getCharacteristic(DATA_UUID)
             if (status != BluetoothGatt.GATT_SUCCESS || data == null) {
                 failReason = "service not found"
-                g.disconnect() // -> onConnectionStateChange -> handleDisconnect
+                g.disconnect()
                 return
             }
             dataChar = data
@@ -279,20 +277,19 @@ class BleClient(
         startScan() // riprende la ricerca
     }
 
-    // ---------------------------------------------------------------- invio
-    /** Scrive un pacchetto sulla characteristic DATA (Write Without Response). */
+
+    //Scrive un pacchetto sulla characteristic DATA
     fun send(bytes: ByteArray): Boolean {
         val c = dataChar ?: return false
         return write(c, bytes)
     }
 
-    // --- START [18/10/2026] Step 9: Invio comandi di controllo su CTRL_UUID ---
-    /** Scrive un comando sulla characteristic CTRL (Write Without Response). */
+    // Scrive un comando sulla characteristic CTRL
     fun sendCtrl(bytes: ByteArray): Boolean {
         val c = ctrlChar ?: return false
         return write(c, bytes)
     }
-    // --- END [18/10/2026] Step 9: Invio comandi di controllo su CTRL_UUID ---
+
 
     private fun write(c: BluetoothGattCharacteristic, bytes: ByteArray): Boolean {
         val g = gatt ?: return false
