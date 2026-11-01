@@ -106,3 +106,7 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
                 - a play/stop button
                 - a stop button
              The server side in no updated for handle the new action (we only work on the watch app)
+
+1/11/2026 
+(group work) Updated the server in order to handle the new command defined in the previous work (31/10/2026)
+| +2 commit | 336 lines of code
