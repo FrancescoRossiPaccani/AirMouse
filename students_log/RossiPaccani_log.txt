@@ -45,5 +45,8 @@ In the afternoon we implemented the denoiser
                 - a stop button
              The server side in no updated for handle the new action (we only work on the watch app)
          
+31/10/2026 
+(group work) Updated the server in order to handle the new command defined in the previous work (31/10/2026)
+             
             
 

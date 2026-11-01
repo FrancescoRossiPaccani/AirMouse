@@ -9,7 +9,7 @@ class TrackingModule(
     private val verticalAxis: Int = 1,
     private val horizontalSign: Double = -1.0,
     private val verticalSign: Double = -1.0,
-    private val pxPerDeg: Double = 18.0,   // sensibilità base
+    private val basePxPerDeg: Double = 18.0,   // sensibilità base
     private val deadzoneDps: Double = 0.7,
     // Curva a tre zone (gradi/s)
     private val slowDps: Double = 15.0,    // sotto: guadagno fine
@@ -24,6 +24,9 @@ class TrackingModule(
 ) {
     private var x = 0.0
     private var y = 0.0
+    var sensitivity: Double = 1.0
+    val position: Pair<Int, Int>
+        get() = Math.round(x).toInt() to Math.round(y).toInt()
     private var prevTMs: Int? = null
     private var initialized = false
     private val history = ArrayDeque<Pair<Double, Double>>()
@@ -42,6 +45,7 @@ class TrackingModule(
         updateBias(g)
 
         val dt = prevTMs?.let { ((p.tMs - it) / 1000.0).coerceIn(0.01, 0.15) } ?: 0.05
+        val pxPerDeg = basePxPerDeg * sensitivity
         prevTMs = p.tMs
 
         val rateH = g[horizontalAxis] - bias[horizontalAxis]
@@ -100,6 +104,15 @@ class TrackingModule(
         history.clear()
     }
 
+    fun center() {
+        val b = mouse.bounds
+        x = b.x + b.width / 2.0
+        y = b.y + b.height * (0.5 - CENTER_UP_FRACTION)
+        mouse.moveTo(Math.round(x).toInt(), Math.round(y).toInt())
+        initialized = true
+        history.clear()
+    }
+
     private fun syncWithRealMouse() {
         val (mx, my) = mouse.position()
         if (!initialized || abs(mx - x) > 3 || abs(my - y) > 3) {
@@ -108,3 +121,5 @@ class TrackingModule(
         }
     }
 }
+
+private const val CENTER_UP_FRACTION = 0.15
