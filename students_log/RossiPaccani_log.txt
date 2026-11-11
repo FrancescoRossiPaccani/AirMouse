@@ -47,7 +47,12 @@ In the afternoon we implemented the denoiser
          
 1/11/2026 
 (group work) Updated the server in order to handle the new command defined in the previous work (31/10/2026)
-| +1 commit | 336 lines of code
+| +2 commit | 336 lines of code
              
+11/11/2026
+(group work) Implmented a simple version of the app but with the logic in the smartwach, so all the computation is made by the edge device.
+             We make a simple version in order to test (next time) the power consumption difference beetween the edge one and the pc-hosted one
+             N.b. a lot of the code is just a copy of the pc-version, the laser pointer feature is not yet implemented
+| +1 commit |
             
 
