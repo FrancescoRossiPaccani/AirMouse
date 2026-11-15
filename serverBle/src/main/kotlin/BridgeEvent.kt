@@ -7,11 +7,12 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 
+// Formato (little-endian): int32 seq | int32 t_ms | 3 x float32 gyro
 class ImuPacket(
     val seq: Int,
     val tMs: Int,
-    val clean: FloatArray,   // acc(3), gyro(3), mag(3) filtrati
-    val raw: FloatArray?,    // acc(3), gyro(3), mag(3) grezzi
+    val clean: FloatArray,   
+    val raw: FloatArray?,    
 )
 
 sealed interface BridgeEvent {
@@ -20,13 +21,13 @@ sealed interface BridgeEvent {
 }
 
 fun parsePacket(data: ByteArray, offset: Int, length: Int): ImuPacket? {
-    if (length < 44) return null
+    if (length != 20) return null
     val b = ByteBuffer.wrap(data, offset, length).order(ByteOrder.LITTLE_ENDIAN)
     val seq = b.int
     val tMs = b.int
-    val clean = FloatArray(9) { b.float }
-    val raw = if (length >= 80) FloatArray(9) { b.float } else null
-    return ImuPacket(seq, tMs, clean, raw)
+    val clean = FloatArray(9)
+    clean[3] = b.float; clean[4] = b.float; clean[5] = b.float
+    return ImuPacket(seq, tMs, clean, null)
 }
 
 fun bridgeEvents(port: Int = 9000): Flow<BridgeEvent> = flow {

@@ -9,3 +9,5 @@ Stessa cosa per i commit
 Per contare le righe di differenza
 git fetch origin
 git diff --stat origin/main~1 origin/main
+
+git diff --numstat origin/main~1 origin/main | awk '{added += $1} END {print "Righe nuove:", added}'
