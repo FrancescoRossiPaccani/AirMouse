@@ -39,6 +39,7 @@ class SmartwatchMouseEngine(
     private var ble: BleClient? = null
     private var running = false
     private var paused = false
+    private var laserMode = false
     private var lastSampleMs = 0L
 
     private var leftLocked = false
@@ -48,6 +49,13 @@ class SmartwatchMouseEngine(
     val lastGesture: StateFlow<String> = _lastGesture.asStateFlow()
 
     fun setDpi(level: Int) = tracking.setDpi(level)
+
+    fun setLaser(enabled: Boolean) {
+        if (laserMode == enabled) return
+        laserMode = enabled
+        guard.reset()
+        releaseDrags()
+    }
 
     fun start(client: BleClient) {
         ble = client
@@ -112,6 +120,13 @@ class SmartwatchMouseEngine(
         lastSampleMs = now
 
         val s = GyroSample(now.toInt(), event.values[0], event.values[1], event.values[2])
+
+        if (laserMode) {
+            // solo tracking, gesti ignorati
+            val (dx, dy) = tracking.onSample(s)
+            if (dx != 0 || dy != 0) send(MouseCommand.Move(dx, dy))
+            return
+        }
 
         val before = guard.mode
         val decision = guard.update(s)

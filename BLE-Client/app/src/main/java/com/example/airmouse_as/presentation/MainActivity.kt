@@ -114,7 +114,6 @@ class MainActivity : ComponentActivity() {
     }
 
     // Pressione prolungata (3 s)
-    // Non funziona
     override fun dispatchKeyEvent(event: KeyEvent): Boolean {
         if (event.keyCode == KeyEvent.KEYCODE_BACK ||
             event.keyCode == KeyEvent.KEYCODE_STEM_PRIMARY

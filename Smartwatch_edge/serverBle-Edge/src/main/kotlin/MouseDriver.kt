@@ -17,12 +17,17 @@ class RobotMouseDriver {
         .map { it.defaultConfiguration.bounds }
         .reduce { a, b -> a.union(b) }
 
-    fun moveBy(dx: Int, dy: Int) {
+    fun position(): Pair<Int, Int> {
         val p = MouseInfo.getPointerInfo().location
-        robot.mouseMove(
-            (p.x + dx).coerceIn(bounds.x, bounds.x + bounds.width - 1),
-            (p.y + dy).coerceIn(bounds.y, bounds.y + bounds.height - 1),
-        )
+        return p.x to p.y
+    }
+
+    fun moveBy(dx: Int, dy: Int): Pair<Int, Int> {
+        val p = MouseInfo.getPointerInfo().location
+        val nx = (p.x + dx).coerceIn(bounds.x, bounds.x + bounds.width - 1)
+        val ny = (p.y + dy).coerceIn(bounds.y, bounds.y + bounds.height - 1)
+        robot.mouseMove(nx, ny)
+        return nx to ny
     }
 
     fun click(button: MouseButton) {

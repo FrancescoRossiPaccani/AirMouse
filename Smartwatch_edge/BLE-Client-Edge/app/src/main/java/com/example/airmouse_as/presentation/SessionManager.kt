@@ -65,6 +65,7 @@ class SessionManager(context: Context) {
             lastDeviceId = device.id
             autoReconnect = true
             engine.setDpi(_dpi.value)
+            engine.setLaser(_laser.value)
             engine.start(ble)
             syncState()
         },
@@ -115,6 +116,7 @@ class SessionManager(context: Context) {
 
     fun toggleLaser() {
         _laser.value = !_laser.value
+        engine.setLaser(_laser.value)
         sendCtrl("mode:${if (_laser.value) "laser" else "mouse"}")
     }
 
