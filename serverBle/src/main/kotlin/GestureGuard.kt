@@ -82,10 +82,9 @@ class GestureGuard(
     }
 
     private fun rateDps(p: ImuPacket): Double {
-        val a = p.raw ?: p.clean
-        val gx = a[3].toDouble()
-        val gy = a[4].toDouble()
-        val gz = a[5].toDouble()
+        val gx = p.gyro[0].toDouble()
+        val gy = p.gyro[1].toDouble()
+        val gz = p.gyro[2].toDouble()
         return Math.toDegrees(sqrt(gx * gx + gy * gy + gz * gz))
     }
 }

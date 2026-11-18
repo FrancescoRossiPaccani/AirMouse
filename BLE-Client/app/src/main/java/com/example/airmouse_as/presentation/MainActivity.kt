@@ -68,7 +68,6 @@ import kotlinx.coroutines.launch
 import kotlin.math.cos
 import kotlin.math.sin
 
-private const val HOLD_SECONDS = 3
 
 class MainActivity : ComponentActivity() {
 
@@ -90,8 +89,10 @@ class MainActivity : ComponentActivity() {
 
     private val permissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { result ->
-            if (result.values.all { it }) session.start()
-            else session.onPermissionDenied()
+            if (result.values.all { it })
+                session.start()
+            else
+                session.onPermissionDenied()
         }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,9 +100,10 @@ class MainActivity : ComponentActivity() {
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         session = SessionManager(this)
         setContent { WearApp(session, holdSeconds) }
-
-        if (hasBlePermissions()) session.start()
-        else permissionLauncher.launch(blePermissions)
+        if (hasBlePermissions())
+            session.start()
+        else
+            permissionLauncher.launch(blePermissions)
     }
 
     override fun onResume() {
@@ -111,39 +113,6 @@ class MainActivity : ComponentActivity() {
 
     private fun hasBlePermissions() = blePermissions.all {
         ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
-    }
-
-    // Pressione prolungata (3 s)
-    override fun dispatchKeyEvent(event: KeyEvent): Boolean {
-        if (event.keyCode == KeyEvent.KEYCODE_BACK ||
-            event.keyCode == KeyEvent.KEYCODE_STEM_PRIMARY
-        ) {
-            if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) startHold()
-            else if (event.action == KeyEvent.ACTION_UP) cancelHold()
-            return true
-        }
-        return super.dispatchKeyEvent(event)
-    }
-
-    private fun startHold() {
-        if (holdJob != null) return
-        holdJob = uiScope.launch {
-            for (s in HOLD_SECONDS downTo 1) {
-                holdSeconds = s
-                delay(1000)
-            }
-            closing = true
-            holdSeconds = 0
-            session.shutdown()
-            finishAffinity()
-        }
-    }
-
-    private fun cancelHold() {
-        if (closing) return
-        holdJob?.cancel()
-        holdJob = null
-        holdSeconds = null
     }
 
     override fun onDestroy() {

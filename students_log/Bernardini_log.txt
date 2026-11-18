@@ -117,7 +117,17 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
              N.b. a lot of the code is just a copy of the pc-version, the laser pointer feature is not yet implemented
 | +1 commit | 3263 (lot of them is from the intelliJ project)
 
-12/11 -> 15/11
-(single work) Done some battery test of the edge version, correct a little bug in the comuter version that do not influence the functionalities but send more data in the ble channel,
-              In Particularry we havn't change the sended data when updating the movement so the watch send the gyroscope, the accellerometer and the magnetometer but uses only the gyroscope one.
-| +1 commit |   
+13/11 
+(group work) In Particularry we havn't change the sended data when updating the movement so the watch send the gyroscope, the accellerometer and the magnetometer but uses only the gyroscope one.
+ +1 commit |
+
+17/11/2026
+(single work) Implmented the laser overlay module also in the edge version. 
+              Do some test and make calculation in the trougput of the edge vs the coputer app.
+|+1 commit | +142 -17
+
+18/11/2026
+(group work) Checked all the computer software versions and made some minor updates to keep them consistent with the changes implemented on 13/11. 
+            The application was already working, but some parts were still based on the older version.  
+            In particular, we changed the format of the received IMU packets and wp udated the odl indexes in the server ([3, 4, 5] to [0, 1, 2])
+|+1 commit |

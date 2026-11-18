@@ -27,6 +27,7 @@ class TrackingModule(
     var sensitivity: Double = 1.0
     val position: Pair<Int, Int>
         get() = Math.round(x).toInt() to Math.round(y).toInt()
+
     private var prevTMs: Int? = null
     private var initialized = false
     private val history = ArrayDeque<Pair<Double, Double>>()
@@ -40,8 +41,8 @@ class TrackingModule(
         val b = mouse.bounds
         syncWithRealMouse()
 
-        val a = if (useRaw && p.raw != null) p.raw else p.clean
-        val g = DoubleArray(3) { Math.toDegrees(a[3 + it].toDouble()) }
+        val a = p.gyro
+        val g = DoubleArray(3) { Math.toDegrees(a[it].toDouble()) }
         updateBias(g)
 
         val dt = prevTMs?.let { ((p.tMs - it) / 1000.0).coerceIn(0.01, 0.15) } ?: 0.05

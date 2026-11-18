@@ -25,8 +25,7 @@ class SessionManager(context: Context) {
     }
 
     private val appContext = context.applicationContext
-    private val adapter: BluetoothAdapter? =
-        (appContext.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
+    private val adapter: BluetoothAdapter? = (appContext.getSystemService(Context.BLUETOOTH_SERVICE) as? BluetoothManager)?.adapter
     private val ioScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     private val _bleReady = MutableStateFlow(false)

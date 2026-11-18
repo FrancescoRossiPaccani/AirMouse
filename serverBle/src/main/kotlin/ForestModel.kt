@@ -9,7 +9,7 @@ class Tree(
     val right: IntArray,
     val feat: IntArray,
     val thr: DoubleArray,
-    val proba: Array<DoubleArray>,
+    val proba: Array<DoubleArray>
 )
 
 class Prediction(val label: String, val confidence: Double)
@@ -19,7 +19,7 @@ class ForestModel(
     val classes: List<String>,
     @SerialName("n_candidates") val nCandidates: Int,
     val selected: List<Int>,
-    val trees: List<Tree>,
+    val trees: List<Tree>
 ) {
     fun predict(candidates: DoubleArray): Prediction {
         require(candidates.size == nCandidates) {

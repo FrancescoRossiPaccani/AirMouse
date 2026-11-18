@@ -12,16 +12,6 @@ class GestureRecognizer(
         return if (pred.confidence >= minConfidence) pred else null
     }
 
-    fun onGesture(window: List<ImuPacket>) {
-        val axes = buildWindow(window)
-        val pred = model.predict(GestureFeatures.extract(axes))
-        if (pred.confidence >= minConfidence) {
-            println("GESTO: ${pred.label} (confidenza ${"%.0f".format(pred.confidence * 100)}%, ${window.size} campioni)")
-        } else {
-            println("Gesto non riconosciuto (migliore: ${pred.label} ${"%.0f".format(pred.confidence * 100)}%)")
-        }
-    }
-
     // Finestra di W campioni centrata sulla parte "attiva" del gesto, riempita con zeri ai bordi
     private fun buildWindow(window: List<ImuPacket>): Array<DoubleArray> {
         val rates = window.map { rateDps(it) }
@@ -39,16 +29,16 @@ class GestureRecognizer(
             val src = start + i
             if (src in window.indices) {
                 for (a in 0 until 3)
-                    out[a][i] = window[src].clean[3 + a].toDouble()
+                    out[a][i] = window[src].gyro[a].toDouble()
             }
         }
         return out
     }
 
     private fun rateDps(p: ImuPacket): Double {
-        val gx = p.clean[3].toDouble()
-        val gy = p.clean[4].toDouble()
-        val gz = p.clean[5].toDouble()
+        val gx = p.gyro[0].toDouble()
+        val gy = p.gyro[1].toDouble()
+        val gz = p.gyro[2].toDouble()
         return Math.toDegrees(sqrt(gx * gx + gy * gy + gz * gz))
     }
 }

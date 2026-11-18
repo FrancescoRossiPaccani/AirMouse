@@ -11,8 +11,7 @@ import kotlinx.coroutines.flow.flowOn
 class ImuPacket(
     val seq: Int,
     val tMs: Int,
-    val clean: FloatArray,   
-    val raw: FloatArray?,    
+    val gyro: FloatArray,   // gx, gy, gz (rad/s)
 )
 
 sealed interface BridgeEvent {
@@ -25,9 +24,7 @@ fun parsePacket(data: ByteArray, offset: Int, length: Int): ImuPacket? {
     val b = ByteBuffer.wrap(data, offset, length).order(ByteOrder.LITTLE_ENDIAN)
     val seq = b.int
     val tMs = b.int
-    val clean = FloatArray(9)
-    clean[3] = b.float; clean[4] = b.float; clean[5] = b.float
-    return ImuPacket(seq, tMs, clean, null)
+    return ImuPacket(seq, tMs, FloatArray(3) { b.float })
 }
 
 fun bridgeEvents(port: Int = 9000): Flow<BridgeEvent> = flow {
