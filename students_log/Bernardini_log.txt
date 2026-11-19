@@ -128,6 +128,6 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
 
 18/11/2026
 (group work) Checked all the computer software versions and made some minor updates to keep them consistent with the changes implemented on 13/11. 
-            The application was already working, but some parts were still based on the older version.  
-            In particular, we changed the format of the received IMU packets and wp udated the odl indexes in the server ([3, 4, 5] to [0, 1, 2])
-|+1 commit |
+             The application was already working, but some parts were still based on the older version.  
+             In particular, we changed the format of the received IMU packets and wp udated the odl indexes in the server ([3, 4, 5] to [0, 1, 2])
+|+1 commit | +60
