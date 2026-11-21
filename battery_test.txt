@@ -1,0 +1,21 @@
+# Battery Consumption Test - Wi-Fi vs BLE (Initial PC-hosted version)
+# 
+# Device: Samsung Galaxy Watch (Wear OS)
+# Test duration: 1 hour per run
+# Test conditions:
+#   - Screen always ON (maximum brightness)
+#   - 2 active background services: Samsung Health, Google Assistant
+#   - Initial 9-channel IMU streaming version (Acc + Gyro + Mag, 44 Bytes/packet @ 20 Hz)
+#
+# Values format: Initial Battery % -> Remaining Battery % after 1 hour (Battery Drain in 1h)
+
+1) Wifi 1h 100% -> ~73%   (Drain: ~27%)
+2) BLE  1h 100% -> ~82%   (Drain: ~18%)
+3) Wifi 1h 100% -> ~74%   (Drain: ~26%)
+4) BLE  1h 100% -> ~84%   (Drain: ~16%)
+5) BLE  1h 100% -> ~85%   (Drain: ~15%)
+6) Wifi 1h 100% -> ~73%   (Drain: ~27%)
+
+# Summary:
+# - Wi-Fi average drain: ~26.7% / hour
+# - BLE (9-channel streaming) average drain: ~16.3% / hour

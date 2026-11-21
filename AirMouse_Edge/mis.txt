@@ -1,0 +1,26 @@
+# Battery Consumption Measurements - Edge vs PC (Single-Sensor Gyroscope)
+#
+# Device: Samsung Galaxy Watch (Wear OS)
+# Test duration: 1 hour per run
+# Test conditions:
+#   - Screen always ON (maximum brightness)
+#   - 2 active background services: Samsung Health, Google Assistant
+#
+# Values represent the total battery discharge percentage (%) after 1 hour of use.
+
+# --- Edge Version (BLE-Client-Edge) ---
+# On-device processing: motion tracking and Random Forest gesture recognition executed locally.
+# Radio transmission: event-driven (only relative movement commands and click actions; 0 B/s when idle).
+1) Edge 1h -> 14%
+2) Edge 1h -> 16%
+3) Edge 1h -> 11%
+4) Edge 1h -> 11%
+# Average Edge discharge: 13.0% / hour
+
+# --- PC Version - Gyroscope Only (AirMouse_Pc) ---
+# Streaming mode: continuous 20 Hz transmission of gyroscope data (20 Bytes/packet = 400 B/s).
+5) PC 1h -> 14%
+6) PC 1h -> 14%
+7) PC 1h -> 13%
+8) PC 1h -> 14%
+# Average PC (gyro-only streaming) discharge: 13.75% / hour

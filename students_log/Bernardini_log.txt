@@ -131,3 +131,7 @@ STUDENT WORK LOG: Lorenzo Bernardini | AirMouse
              The application was already working, but some parts were still based on the older version.  
              In particular, we changed the format of the received IMU packets and wp udated the odl indexes in the server ([3, 4, 5] to [0, 1, 2])
 |+1 commit | +60
+
+21/11/2026 
+(group work) Final reorganizzation in order to submit the project, made the readme.txt
+|+1 commit |

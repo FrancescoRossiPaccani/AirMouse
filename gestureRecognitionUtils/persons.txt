@@ -1,0 +1,16 @@
+# Dataset Participants
+# 
+# 10 subjects (P0 - P9) who participated in recording the gesture dataset.
+# An asterisk (*) indicates the project authors.
+# Corresponding raw data files are stored in gestureRecognitionUtils/data/
+
+P0 = ELENA
+P1 = TOMMY MALO
+P2 = ELISA
+P3 = PACCA *
+P4 = LORENZ *
+P5 = AME
+P6 = LUCA
+P7 = TOMMY
+P8 = DANIELE C.
+P9 = JOSEPH

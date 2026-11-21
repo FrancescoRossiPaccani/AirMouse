@@ -76,6 +76,10 @@ In the afternoon we implemented the denoiser
              In particular, we changed the format of the received IMU packets and wp udated the odl indexes in the server ([3, 4, 5] to [0, 1, 2])
 |+1 commit | +60
 
-19/10/2026 
+19/11/2026 
 (single work) Added last mesurament
 |+1 commit | +2
+
+21/11/2026 
+(group work) Final reorganizzation in order to submit the project, made the readme.txt
+|+1 commit |
